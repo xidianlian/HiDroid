@@ -11,18 +11,13 @@
 package com.webrelax.service;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.charset.Charset;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
-
-import com.webrelax.dao.ApiDao;
 import com.webrelax.entity.Api;
 import com.webrelax.entity.App;
 import com.webrelax.util.CsvReader;
@@ -102,9 +97,9 @@ public class ABMatrix {
 			for(int i=0;i<str.length;i++) {
 				String[] a=str[i].split(":");
 				Api api=new Api();
-				api.setApiName(str[0]);
-				api.setPackName(str[1]);
-				api.setInvokeMethod(str[2]);
+				api.setApiName(a[0]);
+				api.setPackName(a[1]);
+				api.setInvokeMethod(a[2]);
 				s.add(api);
 			}
 			res.add(s);

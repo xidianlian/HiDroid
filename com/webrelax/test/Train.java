@@ -38,26 +38,17 @@ public class Train {
 			System.out.println("反编译...");
 			ext.decompilation();
 			System.out.println("反编译完成");
-			System.out.println();
 			System.out.println("提取api...");
 			ext.extractApi();
 			System.out.println("提取完成");
-//			System.out.println();
-//			System.out.println("mrmr算法...");
-//			ext.mrmr();
-//			System.out.println("mrmr算法完成");
-//			Set<Api> newApi = ext.getNewApi();
-//			for(Api api:newApi) {
-//				System.out.println(api.getApiName());
-//			}
+			System.out.println("mrmr算法...");
+			ext.mrmr();
+			System.out.println("mrmr算法完成");
+			
 		} catch (HinDroidException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 			System.out.println(e.getMessage());
-		}
-		if(ext!=null) {
-			
-			
 		}
 	}
 }

@@ -23,7 +23,6 @@ import java.util.Set;
 
 import com.webrelax.dao.ApiDao;
 import com.webrelax.entity.Api;
-import com.webrelax.entity.App;
 import com.webrelax.util.CmdUtil;
 import com.webrelax.util.CsvWriter;
 
@@ -40,7 +39,15 @@ public class Mrmr {
 	public Mrmr(String outputPath) {
 		this.outputPath=outputPath;
 	}
-	private void generateCsvFile(Map<String,App> apps) {
+	
+	/**@Title: generateCsvFile
+	 * @Description: TODO()
+	 * @param malwareMatrixPath
+	 * @param benignMatrixPath    参数
+	 * @return void    返回类型
+	 */
+	    
+	private void generateCsvFile(String malwareMatrixPath,String benignMatrixPath) {
 		File file=new File(outputPath+File.separator+"mrmr.csv");
 		if(!file.exists()) {
 			try {
@@ -76,27 +83,47 @@ public class Mrmr {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		for(Map.Entry<String, App> e:apps.entrySet()) {
-			App app=e.getValue();
-			Map<String, Api> containApis = app.getContainApis();
-			csvValues[0]=new Integer(app.getType()).toString();
-			for(int i=1;i<feature.length;i++) {
-				if(containApis.containsKey(feature[i])) {
-					csvValues[i]="1";
-				}else {
-					csvValues[i]="0";
+		readCsvFile(malwareMatrixPath, cw, feature, csvValues,1);
+		readCsvFile(benignMatrixPath, cw, feature, csvValues,-1);
+		cw.close();
+	}
+		
+	/**@Title: readCsvFile
+	 * @Description: TODO()
+	 * @param matirxFilePath
+	 * @param cw
+	 * @param feature
+	 * @param csvValues    参数
+	 * @return void    返回类型
+	 **/
+	private void readCsvFile(String matirxFilePath, CsvWriter cw, String[] feature, String[] csvValues,int appType) {
+		File appFile =new File(matirxFilePath);
+		File[] appFiles=appFile.listFiles();
+		for(int i=0;i<appFiles.length;i++) {
+			String fileName=appFiles[i].getName();
+			Map<String, Api> readAmatrix=null;
+			try {
+				readAmatrix = ABMatrix.readAmatrix(matirxFilePath+File.separator+fileName+File.separator+"A.csv");
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			if(readAmatrix!=null) {
+				csvValues[0]=new Integer(appType).toString();
+				for(int j=1;j<feature.length;j++) {
+					if(readAmatrix.containsKey(feature[j])) {
+						csvValues[j]="1";
+					}else {
+						csvValues[j]="0";
+					}
+				}
+				try {
+					cw.writeRecord(csvValues);
+				} catch (IOException e1) {
+					e1.printStackTrace();
 				}
 			}
-		
-			try {
-				cw.writeRecord(csvValues);
-			} catch (IOException e1) {
-				// TODO Auto-generated catch block
-				e1.printStackTrace();
-			}
-			
 		}
-		cw.close();
 	}
 	public  Set<Api> getNewApi(String filePath) throws IOException{
 		if(filePath==null)
@@ -107,7 +134,7 @@ public class Mrmr {
 		File file=new File(filePath);
 		if(!file.exists())return null;
 		BufferedReader br=new BufferedReader(new FileReader(file));
-		String line,sql;
+		String line;
 		boolean flag=false;
 		for( line=br.readLine();line!=null;line=br.readLine()){
 			line=line.trim();
@@ -143,8 +170,9 @@ public class Mrmr {
 		br.close();
 		return apis;
 	}
-	public void mrmrAlgorithm(Map<String,App> apps) {
-		generateCsvFile(apps);
+	public void mrmrAlgorithm(String malwareMatrixPath,String benignMatrixPath) {
+
+		generateCsvFile(malwareMatrixPath,benignMatrixPath);
 		File file=new File(outputPath);
 		String inFile=file.getAbsolutePath()+File.separator+"mrmr.csv";
 		String outFile=file.getAbsolutePath()+File.separator+"mrmr.out";

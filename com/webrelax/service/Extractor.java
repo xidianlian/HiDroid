@@ -11,16 +11,11 @@
 package com.webrelax.service;
 
 import java.io.BufferedReader;
-import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -293,8 +288,11 @@ public class Extractor {
 		}
 	}
 	public void mrmr() {
+		if(!"train".equals(dataType)) {
+			return;
+		}
 		Mrmr mrmr = new Mrmr(mrmrOutputPath);
-//		mrmr.mrmrAlgorithm(apps);
+		mrmr.mrmrAlgorithm(malwareMatrixPath,benignMatrixPath);
 	}
 	public Set<Api> getNewApi(){
 		Mrmr mrmr = new Mrmr(mrmrOutputPath);
