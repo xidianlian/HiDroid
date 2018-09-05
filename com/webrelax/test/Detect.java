@@ -12,6 +12,7 @@ package com.webrelax.test;
 
 import com.webrelax.exception.HinDroidException;
 import com.webrelax.service.Extractor;
+import com.webrelax.service.MetaPath;
 
 /**   
  * @ClassName:  Detect   
@@ -27,14 +28,25 @@ public class Detect {
 		 */
 
 	public static void main(String[] args) {
+		Extractor ext=null;
 		try {
-			Extractor ext= new Extractor("detect");
+			ext= new Extractor("detect");
+			System.out.println("反编译...");
 			ext.decompilation();
+			System.out.println("反编译完成");
+			System.out.println("提取api...");
+			ext.extractApi();
+			System.out.println("提取完成");
+			System.out.println("生成AB矩阵...");
+			ext.outputAB_MatrixCsv();
+			System.out.println("生成AB矩阵完成");
 		} catch (HinDroidException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 			System.out.println(e.getMessage());
 		}
+//		MetaPath mp=new MetaPath("detect");
+//		mp.dealMetaPath();
 
 	}
 

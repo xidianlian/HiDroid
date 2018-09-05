@@ -9,7 +9,6 @@
  */
     
 package com.webrelax.service;
-
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
@@ -19,17 +18,10 @@ import java.sql.SQLException;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
-
 import com.webrelax.dao.ApiDao;
 import com.webrelax.entity.Api;
 import com.webrelax.entity.App;
 import com.webrelax.exception.HinDroidException;
-
-/**   
- * @ClassName:  Extractor   
- * @Description:TODO(特征提取)       
- */
 
 public class Extractor {
 	//训练集和测试集
@@ -56,10 +48,8 @@ public class Extractor {
 		 File file=null;
 		if("train".equals(dataType)) {
 			dataPath="dataset"+File.separator+"traindata";
-			
 		}else if("test".equals(dataType)){
 			dataPath="dataset"+File.separator+"testdata";
-			
 		}else if("detect".equals(dataType)) {
 			dataPath="dataset"+File.separator+"detectdata";
 		}else {
@@ -252,7 +242,7 @@ public class Extractor {
 				}
 				app=new App();
 				iterateFileDir(detectDecompilePath+File.separator+dirName,dirName);
-				ABMatrix.outputMatrixCsv(app,detectMatrixPath+File.separator+dirName);
+				ABCsv.outputABCsv(app,detectMatrixPath+File.separator+dirName);
 			}
 		}else {
 			file=new File(malwareDecompilePath);
@@ -267,7 +257,7 @@ public class Extractor {
 				}
 				app=new App();
 				iterateFileDir(malwareDecompilePath+File.separator+dirName,dirName);
-				ABMatrix.outputMatrixCsv(app,malwareMatrixPath+File.separator+dirName);
+				ABCsv.outputABCsv(app,malwareMatrixPath+File.separator+dirName);
 			}
 			
 			
@@ -283,7 +273,7 @@ public class Extractor {
 				}
 				app=new App();
 				iterateFileDir(benignDecompilePath+File.separator+dirName,dirName);
-				ABMatrix.outputMatrixCsv(app,benignMatrixPath+File.separator+dirName);
+				ABCsv.outputABCsv(app,benignMatrixPath+File.separator+dirName);
 			}
 		}
 	}
@@ -293,16 +283,30 @@ public class Extractor {
 		}
 		Mrmr mrmr = new Mrmr(mrmrOutputPath);
 		mrmr.mrmrAlgorithm(malwareMatrixPath,benignMatrixPath);
+		
 	}
-	public Set<Api> getNewApi(){
-		Mrmr mrmr = new Mrmr(mrmrOutputPath);
-		try {
-			return mrmr.getNewApi(null);
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+	public void outputAB_MatrixCsv() {
+		if(!"detect".equals(dataType)) {
+			File malware=new File(malwareMatrixPath);
+			File[] malwareFiles=malware.listFiles();
+			File benign=new File(benignMatrixPath);
+			File[] benignFiles=benign.listFiles();
+			for(int i=0;i<malwareFiles.length;i++) {
+				ABCsv.outputA_MatrixCsv(malwareMatrixPath+File.separator+malwareFiles[i].getName());
+				ABCsv.outputB_MatrixCsv(malwareMatrixPath+File.separator+malwareFiles[i].getName());
+			}
+			for(int i=0;i<benignFiles.length;i++) {
+				ABCsv.outputA_MatrixCsv(benignMatrixPath+File.separator+benignFiles[i].getName());
+				ABCsv.outputB_MatrixCsv(benignMatrixPath+File.separator+benignFiles[i].getName());
+			}
+		}else {
+			File malware=new File(detectMatrixPath);
+			File[] files=malware.listFiles();
+			for(int i=0;i<files.length;i++) {
+				ABCsv.outputA_MatrixCsv(detectMatrixPath+File.separator+files[i].getName());
+				ABCsv.outputB_MatrixCsv(detectMatrixPath+File.separator+files[i].getName());
+			}
 		}
-		return null;
 	}
 }
 

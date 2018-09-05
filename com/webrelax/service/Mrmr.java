@@ -39,6 +39,7 @@ public class Mrmr {
 	public Mrmr(String outputPath) {
 		this.outputPath=outputPath;
 	}
+	public Mrmr() {}
 	
 	/**@Title: generateCsvFile
 	 * @Description: TODO()
@@ -46,7 +47,6 @@ public class Mrmr {
 	 * @param benignMatrixPath    参数
 	 * @return void    返回类型
 	 */
-	    
 	private void generateCsvFile(String malwareMatrixPath,String benignMatrixPath) {
 		File file=new File(outputPath+File.separator+"mrmr.csv");
 		if(!file.exists()) {
@@ -83,8 +83,8 @@ public class Mrmr {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		readCsvFile(malwareMatrixPath, cw, feature, csvValues,1);
-		readCsvFile(benignMatrixPath, cw, feature, csvValues,-1);
+		writeCsvFile(malwareMatrixPath, cw, feature, csvValues,1);
+		writeCsvFile(benignMatrixPath, cw, feature, csvValues,-1);
 		cw.close();
 	}
 		
@@ -96,22 +96,22 @@ public class Mrmr {
 	 * @param csvValues    参数
 	 * @return void    返回类型
 	 **/
-	private void readCsvFile(String matirxFilePath, CsvWriter cw, String[] feature, String[] csvValues,int appType) {
+	private void writeCsvFile(String matirxFilePath, CsvWriter cw, String[] feature, String[] csvValues,int appType) {
 		File appFile =new File(matirxFilePath);
 		File[] appFiles=appFile.listFiles();
 		for(int i=0;i<appFiles.length;i++) {
 			String fileName=appFiles[i].getName();
-			Map<String, Api> readAmatrix=null;
+			Map<String, Api> readAcsv=null;
 			try {
-				readAmatrix = ABMatrix.readAmatrix(matirxFilePath+File.separator+fileName+File.separator+"A.csv");
+				readAcsv = ABCsv.readACsv(matirxFilePath+File.separator+fileName);
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-			if(readAmatrix!=null) {
+			if(readAcsv!=null) {
 				csvValues[0]=new Integer(appType).toString();
 				for(int j=1;j<feature.length;j++) {
-					if(readAmatrix.containsKey(feature[j])) {
+					if(readAcsv.containsKey(feature[j])) {
 						csvValues[j]="1";
 					}else {
 						csvValues[j]="0";

@@ -10,7 +10,13 @@ public class Matrix {
 	public Matrix(Matrix mat) {
 		r=mat.getR();
 		c=mat.getC();
-		x=mat.getX();
+		int[][] temp=mat.getX();
+		x=new int[r][c];
+		for(int i=0;i<r;i++) {
+			for(int j=0;j<c;j++) {
+				x[i][j]=temp[i][j];
+			}
+		}
 	}
 	public Matrix(int[][] xx) {
 		if(xx==null)
@@ -35,6 +41,7 @@ public class Matrix {
 	public void setX(int i,int j,int values) {
 		x[i][j]=values;
 	}
+	
 	public Matrix mulMatrix(Matrix mat){
 		if(c!=mat.getR())return null;
 		int[][] res=new int[r][mat.getC()];
@@ -52,9 +59,13 @@ public class Matrix {
 		
 		return new Matrix(res);
 	}
-	/**
-	 * ����Ԫ�ض�Ӧ����
-	 * */
+	public void setZero() {
+		for(int i=0;i<r;i++) {
+			for(int j=0;j<c;j++) {
+				x[i][j]=0;
+			}
+		}
+	}
 	public Matrix andMatrix(Matrix mat){
 		if(r!=mat.getR()||c!=mat.getC())return null;
 		int[][] matx=mat.getX();
@@ -73,5 +84,13 @@ public class Matrix {
 			}
 		}
 		return new Matrix(res);
+	}
+	public void outputMatrix() {
+		for(int i=0;i<r;i++) {
+			for(int j=0;j<c;j++) {
+				System.out.print(x[i][j]+"");
+			}
+			System.out.println();
+		}
 	}
 }
