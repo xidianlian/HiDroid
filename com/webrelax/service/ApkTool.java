@@ -16,6 +16,7 @@ import java.sql.SQLException;
 
 import com.webrelax.dao.AppDao;
 import com.webrelax.entity.App;
+import com.webrelax.util.CmdUtil;
 
 import brut.androlib.AndrolibException;
 import brut.androlib.ApkDecoder;
@@ -43,15 +44,18 @@ public class ApkTool {
 			decoder.setOutDir(new File(outPath));
 			decoder.setApkFile(inFile);
 			decoder.decode();
-		} catch (AndrolibException e) {
-			// TODO Auto-generated catch block
+		} catch (AndrolibException e) {	
+			System.out.println(inFile.getName());
 			e.printStackTrace();
+		
 		} catch (DirectoryException e) {
-			// TODO Auto-generated catch block
+			System.out.println(inFile.getName());
 			e.printStackTrace();
+		
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
+			System.out.println(inFile.getName());
 			e.printStackTrace();
+			
 		}
 	}
 	/**
@@ -73,8 +77,20 @@ public class ApkTool {
 				if(fileName.endsWith(".apk")) {
 					String subFileName=fileName.substring(0, fileName.length()-4);
 					File outputPath=new File(outDir+File.separator+subFileName);
-					if(!outputPath.exists())
+					if(!outputPath.exists()) {
 						decompilation(inDir+File.separator+fileName, outDir+File.separator+subFileName);
+
+						File decompFile=new File(outDir+File.separator+subFileName);
+						File[] decompFileList=decompFile.listFiles();
+						if(decompFileList.length==0) {
+							decompFile.delete();
+							continue;
+						}else {
+							String command = "rmdir /S /Q assets lib original res unknown";
+							CmdUtil.cmd(outDir+File.separator+subFileName, command);
+						}
+					}
+						
 					//如果是训练数据，才存储数据库
 					if("train".equals(dataType)) {
 						AppDao appdao=new AppDao();

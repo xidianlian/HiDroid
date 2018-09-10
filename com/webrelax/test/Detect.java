@@ -10,9 +10,12 @@
     
 package com.webrelax.test;
 
+import java.io.File;
+
 import com.webrelax.exception.HinDroidException;
 import com.webrelax.service.Extractor;
 import com.webrelax.service.MetaPath;
+import com.webrelax.util.CmdUtil;
 
 /**   
  * @ClassName:  Detect   
@@ -21,12 +24,18 @@ import com.webrelax.service.MetaPath;
 
 public class Detect {
 
-	/**@Title: main
-	 * @Description: TODO()
-	 * @param args    参数
-	 * @return void    返回类型
-		 */
-
+	private static void svmTest() {
+		String kernelfilePath="output"+File.separator+"PrecomputedKernels";
+		String outputPath="output"+File.separator+"svm"+File.separator+"svm_test.output";
+		File file=new File(kernelfilePath);
+		File outFile=new File(outputPath);
+		String command="SVM_Predict.exe "
+				+ file.getAbsolutePath()+File.separator+"y_test "
+				+ file.getAbsolutePath()+File.separator+"model_file "
+				+ file.getAbsolutePath()+File.separator+"prediction"
+				+ ">"+outFile.getAbsolutePath();
+		CmdUtil.cmd("exe", command);
+	}
 	public static void main(String[] args) {
 		Extractor ext=null;
 		try {
@@ -45,8 +54,9 @@ public class Detect {
 			e.printStackTrace();
 			System.out.println(e.getMessage());
 		}
-//		MetaPath mp=new MetaPath("detect");
-//		mp.dealMetaPath();
+		MetaPath mp=new MetaPath("detect");
+		mp.dealMetaPath();
+		svmTest();
 
 	}
 

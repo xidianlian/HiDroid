@@ -153,7 +153,7 @@ public class Mrmr {
 				{
 					Api api=null;
 					try {
-						api=apidao.findApiById(new Integer(str[1]));
+						api=apidao.findApiById(new Integer(str[2]));
 					} catch (NumberFormatException e) {
 						// TODO Auto-generated catch block
 						e.printStackTrace();

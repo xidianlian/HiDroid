@@ -14,6 +14,10 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
 import java.util.Set;
 import com.webrelax.entity.Api;
 import com.webrelax.util.Matrix;
@@ -100,7 +104,19 @@ public class MetaPath {
 		}
 		outputYFile();
 	}
-	
+	private void sortFileList(File [] files) {
+		List<File> fileList = Arrays.asList(files);
+	    Collections.sort(fileList, new Comparator<File>() {
+	        @Override
+	        public int compare(File o1, File o2) {
+	            if (o1.isDirectory() && o2.isFile())
+	                return -1;
+	            if (o1.isFile() && o2.isDirectory())
+	                return 1;
+	            return o1.getName().compareTo(o2.getName());
+	        }
+	    });
+	}
 	/**
 	 * @Title: generateC_Matrix
 	 * @Description: TODO(得到交换矩阵)
@@ -128,8 +144,16 @@ public class MetaPath {
 		File[] colFiles2 = new File(colBenignPath).listFiles();
 		File[] rowFiles1 = new File(rowMalwarePath).listFiles();
 		File[] rowFiles2=null;
-		if(rowBenignPath!=null)
+		if(rowBenignPath!=null) {
 			rowFiles2 = new File(rowBenignPath).listFiles();
+			sortFileList(rowFiles2);
+		}
+		//根据文件名排序
+		sortFileList(colFiles1);
+		sortFileList(colFiles2);
+		sortFileList(rowFiles1);
+		sortFileList(rowFiles2);
+		
 		int rowAppNum=rowFiles1.length+(rowFiles2==null?0:rowFiles2.length);
 		int colAppNum=colFiles1.length+colFiles2.length;
 		cMatrix=new Matrix(rowAppNum+1,colAppNum+1);
@@ -308,8 +332,10 @@ public class MetaPath {
 			fileName="y_test";
 			malwarePath="dataset"+File.separator+"testdata"+File.separator+"malwarematrix";
 			benignPath="dataset"+File.separator+"testdata"+File.separator+"benignmatrix";
-		}else {
-			//...
+		}else if("detect".equals(dataType)){
+			fileName="y_test";
+			malwarePath="dataset"+File.separator+"detectdata"+File.separator+"matrix";
+			benignPath=malwarePath;
 		}
 		File file1=new File(malwarePath);
 		File file2=new File(benignPath);
@@ -331,7 +357,7 @@ public class MetaPath {
 			for(int i=1;i<=malwareNum;i++) {
 				bw.write("1"+"\r\n");
 			}
-			for(int i=1;i<=benignNum;i++) {
+			for(int i=1;!"detect".equals(dataType)&&i<=benignNum;i++) {
 				bw.write("-1"+"\r\n");
 			}
 			bw.close();

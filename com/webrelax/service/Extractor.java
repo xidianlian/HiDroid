@@ -42,7 +42,11 @@ public class Extractor {
 	
 	private App app=null;
 
-	public Extractor(String dataType) throws HinDroidException{
+	//三个数据集中是否输出AB矩阵，只有训练集加了数据才置为true
+	private static boolean outTrainABMatrix;
+	private static boolean outTestABMatrix;
+	private static boolean outDetectABMatrix;
+	public void setDataType(String dataType) throws HinDroidException{
 		this.dataType=dataType;
 		String dataPath=null;
 		 File file=null;
@@ -255,6 +259,12 @@ public class Extractor {
 				else {
 					f.mkdirs();
 				}
+				//如果是训练集，并加了数据，才输出AB_Matrix
+				if("train".equals(dataType)) {
+					Extractor.outTrainABMatrix=true;
+					Extractor.outTestABMatrix=true;
+					Extractor.outDetectABMatrix=true;
+				}
 				app=new App();
 				iterateFileDir(malwareDecompilePath+File.separator+dirName,dirName);
 				ABCsv.outputABCsv(app,malwareMatrixPath+File.separator+dirName);
@@ -271,6 +281,12 @@ public class Extractor {
 				else {
 					f.mkdirs();
 				}
+				//如果是训练集，并加了数据，才输出AB_Matrix
+				if("train".equals(dataType)) {
+					Extractor.outTrainABMatrix=true;
+					Extractor.outTestABMatrix=true;
+					Extractor.outDetectABMatrix=true;
+				}
 				app=new App();
 				iterateFileDir(benignDecompilePath+File.separator+dirName,dirName);
 				ABCsv.outputABCsv(app,benignMatrixPath+File.separator+dirName);
@@ -278,7 +294,7 @@ public class Extractor {
 		}
 	}
 	public void mrmr() {
-		if(!"train".equals(dataType)) {
+		if(!"train".equals(dataType)||!Extractor.outTrainABMatrix==true) {
 			return;
 		}
 		Mrmr mrmr = new Mrmr(mrmrOutputPath);
@@ -291,21 +307,39 @@ public class Extractor {
 			File[] malwareFiles=malware.listFiles();
 			File benign=new File(benignMatrixPath);
 			File[] benignFiles=benign.listFiles();
+			boolean flag=true;
+			
+			if("train".equals(dataType)) {
+				flag=Extractor.outTrainABMatrix;
+			}
+			if("test".equals(dataType)) {
+				flag=Extractor.outTestABMatrix;
+			}
+			System.out.println("flag:"+flag);
 			for(int i=0;i<malwareFiles.length;i++) {
-				ABCsv.outputA_MatrixCsv(malwareMatrixPath+File.separator+malwareFiles[i].getName());
-				ABCsv.outputB_MatrixCsv(malwareMatrixPath+File.separator+malwareFiles[i].getName());
+				ABCsv.outputA_MatrixCsv(malwareMatrixPath+File.separator+malwareFiles[i].getName(),flag);
+				ABCsv.outputB_MatrixCsv(malwareMatrixPath+File.separator+malwareFiles[i].getName(),flag);
 			}
 			for(int i=0;i<benignFiles.length;i++) {
-				ABCsv.outputA_MatrixCsv(benignMatrixPath+File.separator+benignFiles[i].getName());
-				ABCsv.outputB_MatrixCsv(benignMatrixPath+File.separator+benignFiles[i].getName());
+				ABCsv.outputA_MatrixCsv(benignMatrixPath+File.separator+benignFiles[i].getName(),flag);
+				ABCsv.outputB_MatrixCsv(benignMatrixPath+File.separator+benignFiles[i].getName(),flag);
 			}
+			if("train".equals(dataType)) {
+				Extractor.outTrainABMatrix=false;
+			}
+			if("test".equals(dataType)) {
+				Extractor.outTestABMatrix=false;
+			}
+			
 		}else {
 			File malware=new File(detectMatrixPath);
 			File[] files=malware.listFiles();
+			boolean flag=Extractor.outDetectABMatrix;
 			for(int i=0;i<files.length;i++) {
-				ABCsv.outputA_MatrixCsv(detectMatrixPath+File.separator+files[i].getName());
-				ABCsv.outputB_MatrixCsv(detectMatrixPath+File.separator+files[i].getName());
+				ABCsv.outputA_MatrixCsv(detectMatrixPath+File.separator+files[i].getName(),flag);
+				ABCsv.outputB_MatrixCsv(detectMatrixPath+File.separator+files[i].getName(),flag);
 			}
+			Extractor.outDetectABMatrix=false;
 		}
 	}
 }
